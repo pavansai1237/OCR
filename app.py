@@ -39,26 +39,29 @@ def main():
     uploaded_image = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"])
 
     if uploaded_image is not None:
-        image = Image.open(uploaded_image)
-        st.image(image, caption='Uploaded Image', use_column_width=True)
+        try:
+            image = Image.open(uploaded_image)
+            st.image(image, caption='Uploaded Image', use_column_width=True)
 
-        extracted_text = extract_text(image)
-        st.text_area("Extracted Text", extracted_text, height=200)
+            extracted_text = extract_text(image)
+            st.text_area("Extracted Text", extracted_text, height=200)
 
-        keyword = st.text_input("Enter a keyword")
-        if st.button("Search"):
-            highlighted_text = highlight_text(extracted_text, keyword)
-            st.markdown(highlighted_text, unsafe_allow_html=True)
+            keyword = st.text_input("Enter a keyword")
+            if st.button("Search"):
+                highlighted_text = highlight_text(extracted_text, keyword)
+                st.markdown(highlighted_text, unsafe_allow_html=True)
 
-        # Prepare text for download
-        if extracted_text:
-            json_data = json.dumps({"extracted_text": extracted_text}, ensure_ascii=False)
-            st.download_button(
-                label="Download Text as JSON",
-                data=json_data,
-                file_name='extracted_text.json',
-                mime='application/json'
-            )
+            if extracted_text:
+                json_data = json.dumps({"extracted_text": extracted_text}, ensure_ascii=False)
+                st.download_button(
+                    label="Download Text as JSON",
+                    data=json_data,
+                    file_name='extracted_text.json',
+                    mime='application/json'
+                )
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
 
 if __name__ == "__main__":
     main()
+
